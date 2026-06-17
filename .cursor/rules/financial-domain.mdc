@@ -1,0 +1,64 @@
+---
+description: Financial domain terminology, naming consistency and data formatting for the finance app
+alwaysApply: true
+---
+
+# Financial Domain
+
+Use financial terminology consistently across all screens, components, labels, variable names and mock data.
+
+## Canonical Terms
+
+These are the approved terms. Always use exactly these words — never substitute synonyms.
+
+| Term         | Use for                                                  | Never use instead               |
+|--------------|----------------------------------------------------------|---------------------------------|
+| Income       | Money received (salary, revenue, deposits)               | Revenue, Earning, Credit, Entry |
+| Expense      | Money spent                                              | Cost, Spending, Debit, Outflow  |
+| Balance      | Current total amount in an account                       | Total, Amount, Funds            |
+| Savings      | Reserved money set aside for future use                  | Reserve, Deposit                |
+| Investment   | Assets allocated for growth                              | Asset, Portfolio (as a synonym) |
+| Transfer     | Movement of funds between accounts                       | Move, Send                      |
+| Category     | Classification label for a transaction                   | Tag, Type, Group                |
+| Budget       | A planned spending limit for a period                    | Limit, Cap, Allowance           |
+| Goal         | A financial target the user wants to reach               | Target, Objective, Milestone    |
+| Transaction  | Any single financial event (income, expense or transfer) | Record, Entry, Item, Movement   |
+
+## Rules
+
+- Use the same term in UI labels, component names, prop names, hook names, mock data keys and TypeScript types.
+- Do not mix terms between screens — if the list page says "Transactions", the detail page must also say "Transaction".
+- Prefer singular for types and interfaces (`Transaction`, `Category`), plural for collections (`transactions`, `categories`).
+
+## Data Formatting
+
+### Currency
+
+- Default currency is **BRL (Brazilian Real)**.
+- Always format using `Intl.NumberFormat` — never manually concatenate currency strings.
+- Display format: `R$ 1.234,56` (period as thousands separator, comma as decimal separator).
+- Positive values: plain format (`R$ 1.234,56`).
+- Negative values: prefixed with a minus sign and displayed in muted red (`-R$ 1.234,56`).
+- Never display raw float values (e.g. `1234.56`) directly in the UI.
+
+```ts
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+```
+
+### Dates
+
+- Display format: `DD/MM/YYYY` for full dates (e.g. `17/06/2026`).
+- For relative time (recent transactions): use a short relative label (e.g. "hoje", "ontem", "há 3 dias") when the date is within the last 7 days.
+- Always use `pt-BR` locale for date formatting.
+
+### Percentages
+
+- Display with one decimal place: `12,5%`.
+- Positive percentages representing growth: neon green.
+- Negative percentages representing loss: muted red.
+
+### General
+
+- Never display raw unformatted numbers for financial values.
+- All formatting logic must live in `src/utils/` — never inline formatting inside components.

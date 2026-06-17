@@ -1,0 +1,63 @@
+---
+description: Frontend architecture, component standards and consistency rules for the finance app
+alwaysApply: true
+---
+
+# Frontend Standards
+
+## Before Creating Anything
+
+Before creating any new component, page, hook or utility:
+
+1. Search the codebase for an existing implementation that solves the same problem.
+2. If one exists, reuse or extend it — do not create a parallel solution.
+3. Only create something new when nothing existing can reasonably cover the need.
+
+## Components
+
+- Prefer reusable components over duplicated code.
+- Keep components small and focused — one responsibility per component.
+- Split large components into smaller, composable pieces.
+- Never use inline styles — use CSS modules or a utility-first approach consistently.
+- Extend via props or composition before creating a new variant.
+- Never build two components that render the same UI pattern differently.
+
+## Separation of Concerns
+
+- UI components must not contain data-fetching or business logic.
+- Extract reusable logic into custom hooks (`src/hooks/`).
+- Keep data transformation and formatting outside of JSX.
+- If a hook already encapsulates a piece of logic, reuse it — do not extract the same logic again elsewhere.
+
+## Mock Data
+
+- All mock data lives in `src/mocks/`.
+- Components receive data via props or hooks — never import mock files directly inside components.
+- Mock data must match the shape of future API responses exactly.
+- No hardcoded values that will eventually come from the API (labels, lists, amounts, categories, etc.).
+
+## File Organization
+
+```
+src/
+  components/    # Reusable UI components
+  pages/         # Page-level components (one per route)
+  hooks/         # Custom React hooks
+  mocks/         # Static mock data
+  services/      # Future API integration layer (create stubs now)
+  types/         # Shared TypeScript types and interfaces
+  utils/         # Pure utility functions
+```
+
+## Architectural Consistency
+
+- New screens must follow the same structure as existing pages.
+- New features must follow the same data flow pattern already established in the project.
+- When in doubt, match what already exists before proposing a new approach.
+
+## Avoid
+
+- Large components that mix layout, logic and data.
+- Repeated logic — extract to hooks or utils before duplicating.
+- Inline styles (`style={{ ... }}`).
+- Hardcoded values that belong to the data layer.

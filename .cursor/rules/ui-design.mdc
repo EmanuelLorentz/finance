@@ -1,0 +1,74 @@
+---
+description: Visual design system, color guidelines and UI conventions for the finance app
+alwaysApply: true
+---
+
+# UI Design
+
+## Aesthetic
+
+The interface must follow a premium SaaS aesthetic.
+
+- Dark theme as the default and only theme.
+- Modern, clean and minimalist visual language.
+- Professional tone — no playful or decorative elements.
+- Spacious layouts with generous padding and whitespace.
+- Rounded corners on interactive elements and cards.
+- Subtle borders to separate sections (low-contrast, not heavy lines).
+- Clear visual hierarchy through typography size, weight and color contrast.
+
+## Avoid
+
+- Glassmorphism (backdrop-blur with transparent panels).
+- Heavy gradients — flat or very subtle gradients only.
+- Excessive drop shadows — use sparingly and with low opacity.
+- Flashy animations, transitions or attention-grabbing effects.
+- Visually cluttered layouts — each screen should have one clear focal point.
+- Emojis anywhere in the interface — not in labels, headings, placeholders, tooltips or empty states.
+
+## Color
+
+The palette must remain restrained — neutral dark tones dominate. Do not create colorful interfaces. Color is used to communicate, not to decorate.
+
+**Accent color: Neon Green.** Use exclusively for:
+
+- Primary buttons and CTAs.
+- Active states (active nav item, active tab, active filter).
+- Selected items (selected row, selected option).
+- Interactive elements that require visual affordance.
+- Positive financial indicators (gains, income, growth).
+- Chart highlights (primary data series, key data points).
+
+Additional semantic colors:
+- Negative financial indicators (losses, expenses): muted red.
+- Neutral or secondary information: muted gray tones.
+
+Rules:
+- The accent color must never dominate the layout — small, purposeful doses only.
+- Never use the accent on backgrounds, large surfaces or decorative elements.
+- When in doubt, default to neutral and only introduce the accent if it communicates something meaningful.
+
+## Animations
+
+- Use animations only when they improve usability (e.g. loading states, transitions between views).
+- Keep animations subtle and short — prefer durations under 200ms for micro-interactions.
+- Never use animations purely for decoration.
+
+## Responsiveness
+
+- All layouts must be responsive.
+- Design mobile-first: start from small viewports and expand upward.
+- Never use fixed widths that break on smaller screens.
+
+## Consistency
+
+- Spacing, typography and component styles must follow a defined scale — do not use arbitrary values.
+- Reuse existing components before creating new ones.
+- If a new variant of a component is needed, extend the existing component rather than duplicating it.
+- Every new screen must visually match this design system before being considered complete.
+
+## Priorities
+
+1. Readability — font sizes, contrast ratios and line spacing must be comfortable.
+2. Usability — never sacrifice clarity for visual flair.
+3. Aesthetics — beauty serves function, not the other way around.

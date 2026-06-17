@@ -1,0 +1,36 @@
+---
+description: Performance guidelines for the finance app frontend
+globs: src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Performance
+
+Do not prematurely optimize. Apply performance techniques only when there is a measurable or clearly anticipated problem.
+
+## Re-renders
+
+- Avoid unnecessary re-renders by keeping state as close to where it is used as possible.
+- Do not lift state higher than needed — unnecessary global or shared state causes cascading re-renders.
+- Split components so that only the part that changes re-renders, not the entire parent.
+
+## Memoization
+
+- Use `useMemo` and `useCallback` only when the computation is expensive or when referential equality matters (e.g. props passed to memoized children).
+- Do not wrap every value or function in `useMemo`/`useCallback` by default — it adds overhead and reduces readability.
+- Use `React.memo` on components that receive stable props but re-render frequently due to parent updates.
+
+## Lazy Loading
+
+- Lazy load page-level components using `React.lazy` and `Suspense`.
+- Do not lazy load small or shared components — the overhead is not worth it.
+
+```tsx
+const TransactionsPage = React.lazy(() => import('./pages/TransactionsPage'));
+```
+
+## General Rules
+
+- Prefer derived values over redundant state — compute from existing state instead of storing a copy.
+- Avoid anonymous functions and object literals in JSX props when they cause unnecessary re-renders in sensitive components.
+- Profile before optimizing — do not assume a bottleneck exists without evidence.

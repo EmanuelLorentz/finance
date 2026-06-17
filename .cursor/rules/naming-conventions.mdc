@@ -1,0 +1,54 @@
+---
+description: Naming conventions for components, hooks, variables and constants
+globs: src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Naming Conventions
+
+Use clear and descriptive names. Prioritize readability over brevity.
+
+## Components
+
+- `PascalCase` for component names and their files.
+- File name must match the component name exactly.
+
+```tsx
+// file: TransactionCard.tsx
+export function TransactionCard() { ... }
+```
+
+## Hooks
+
+- `camelCase` starting with `use`.
+- File name must match the hook name exactly.
+
+```ts
+// file: useTransactions.ts
+export function useTransactions() { ... }
+```
+
+## Variables and Functions
+
+- `camelCase` for all variables, function names and function parameters.
+
+```ts
+const totalBalance = 1000;
+function formatCurrency(value: number) { ... }
+```
+
+## Constants
+
+- `UPPER_SNAKE_CASE` for module-level constants that are fixed and never reassigned.
+
+```ts
+const MAX_TRANSACTIONS_PER_PAGE = 20;
+const DEFAULT_CURRENCY = 'BRL';
+```
+
+## General Rules
+
+- Avoid abbreviations unless they are universally recognized (e.g. `id`, `url`, `api`).
+- Boolean variables should start with `is`, `has` or `can` (e.g. `isLoading`, `hasError`, `canEdit`).
+- Event handler props should start with `on` (e.g. `onClick`, `onSubmit`, `onChange`).
+- Never use single-letter variable names outside of short loop indices.

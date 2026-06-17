@@ -1,0 +1,27 @@
+---
+description: Project overview and high-level architecture decisions for the finance app
+alwaysApply: true
+---
+
+# Project Overview
+
+This project is a personal finance management application.
+
+## Current Scope
+
+- Front-end only.
+- Back-end will be implemented later.
+
+## Mock Data
+
+All screens must use mock data that mirrors the shape of future REST API responses.
+
+- Keep mock data in dedicated files (e.g. `src/mocks/`).
+- Structure mock objects to match expected API response contracts.
+- Never inline hardcoded data directly inside components.
+
+## Design Principles
+
+- Prioritize scalability, maintainability and reusable components.
+- Build components in isolation so they can be wired to real API calls with minimal changes.
+- Avoid coupling UI logic to data-fetching concerns — use hooks or service layers as an abstraction boundary.
