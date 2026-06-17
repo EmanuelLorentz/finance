@@ -8,4 +8,5 @@ export interface Transaction {
   category: string;
   date: string;
   account: string;
+  projectId?: string;
 }
