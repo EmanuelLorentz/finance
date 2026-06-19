@@ -3,33 +3,32 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@tailwindcss/vite": "^4.3.1",
-    "lucide-react": "^1.20.0",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
-    "react-router-dom": "^7.18.0",
-    "recharts": "^3.8.1",
-    "tailwindcss": "^4.3.1"
+    "dev:web": "npm run dev -w @finance/web",
+    "build:web": "npm run build -w @finance/web",
+    "lint:web": "npm run lint -w @finance/web",
+    "preview:web": "npm run preview -w @finance/web",
+    "dev:api": "npm run dev -w @finance/api",
+    "build:api": "npm run build -w @finance/api",
+    "lint:api": "npm run lint -w @finance/api",
+    "db:migrate": "npm run db:migrate -w @finance/api",
+    "db:seed": "npm run db:seed -w @finance/api",
+    "db:generate": "npm run db:generate -w @finance/api",
+    "build:shared": "npm run build -w @finance/shared",
+    "lint:shared": "npm run lint -w @finance/shared",
+    "build": "npm run build:shared && npm run build:api && npm run build:web",
+    "lint": "npm run lint:shared && npm run lint:api && npm run lint:web",
+    "typecheck": "npm run build"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/node": "^24.12.3",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.1",
     "eslint": "^10.3.0",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
     "typescript": "~6.0.2",
-    "typescript-eslint": "^8.59.2",
-    "vite": "^8.0.12"
+    "typescript-eslint": "^8.59.2"
   }
 }
