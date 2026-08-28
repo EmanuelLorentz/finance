@@ -21,11 +21,17 @@ export function ProjectsPage() {
         project.id,
         await fetchProjectTransactions(project.id),
       ] as const),
-    ).then((entries) => {
-      if (!cancelled) {
-        setTransactionsByProject(Object.fromEntries(entries));
-      }
-    });
+    )
+      .then((entries) => {
+        if (!cancelled) {
+          setTransactionsByProject(Object.fromEntries(entries));
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setTransactionsByProject({});
+        }
+      });
 
     return () => {
       cancelled = true;

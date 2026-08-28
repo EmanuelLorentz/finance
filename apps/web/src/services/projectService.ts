@@ -1,41 +1,18 @@
-import type { Project, CreateProjectData } from '@finance/shared';
-import type { Transaction } from '@finance/shared';
-import { mockProjects } from '../mocks/projects';
-import { mockProjectTransactions } from '../mocks/projectTransactions';
+import type { Project, CreateProjectData, Transaction } from '@finance/shared';
 import { httpClient } from './httpClient';
 
 export async function fetchProjects(): Promise<Project[]> {
-  try {
-    return await httpClient.get<Project[]>('/projects');
-  } catch {
-    return mockProjects;
-  }
+  return httpClient.get<Project[]>('/projects');
 }
 
 export async function fetchProjectById(id: string): Promise<Project | null> {
-  try {
-    return await httpClient.get<Project>(`/projects/${id}`);
-  } catch {
-    return mockProjects.find((p) => p.id === id) ?? null;
-  }
+  return httpClient.get<Project>(`/projects/${id}`);
 }
 
 export async function fetchProjectTransactions(projectId: string): Promise<Transaction[]> {
-  try {
-    return await httpClient.get<Transaction[]>(`/projects/${projectId}/transactions`);
-  } catch {
-    return mockProjectTransactions.filter((t) => t.projectId === projectId);
-  }
+  return httpClient.get<Transaction[]>(`/projects/${projectId}/transactions`);
 }
 
 export async function createProject(data: CreateProjectData): Promise<Project> {
-  try {
-    return await httpClient.post<Project>('/projects', data);
-  } catch {
-    return {
-      ...data,
-      id: `p${Date.now()}`,
-      createdAt: new Date().toISOString().split('T')[0],
-    };
-  }
+  return httpClient.post<Project>('/projects', data);
 }

@@ -8,10 +8,25 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchProjects().then((data) => {
-      setProjects(data);
-      setIsLoading(false);
-    });
+    let cancelled = false;
+
+    fetchProjects()
+      .then((data) => {
+        if (!cancelled) {
+          setProjects(data);
+          setIsLoading(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setProjects([]);
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function addProject(data: CreateProjectData): Promise<Project> {

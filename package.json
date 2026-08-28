@@ -16,6 +16,7 @@
     "build:api": "npm run build -w @finance/api",
     "lint:api": "npm run lint -w @finance/api",
     "db:migrate": "npm run db:migrate -w @finance/api",
+    "db:migrate:dev": "npm run db:migrate:dev -w @finance/api",
     "db:seed": "npm run db:seed -w @finance/api",
     "db:generate": "npm run db:generate -w @finance/api",
     "build:shared": "npm run build -w @finance/shared",
