@@ -50,7 +50,23 @@ export function toNumber(value: unknown): number {
 }
 
 export function toDateOnly(date: Date): string {
-  return date.toISOString().slice(0, 10);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+export function todayDateOnly(): string {
+  return toDateOnly(new Date());
+}
+
+export function parseDateOnly(value: string): Date {
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
+  if (!match) {
+    throw new Error(`Data inválida: ${value}`);
+  }
+
+  return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
 }
 
 export function mapProject(project: ProjectRecord): Project {

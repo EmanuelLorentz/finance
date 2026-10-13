@@ -52,7 +52,7 @@ export function TransactionsPage() {
         <div>
           <h1 className="text-lg font-semibold text-primary">Transações</h1>
           <p className="text-xs text-secondary mt-0.5">
-            Registre Income, Expense e Transfer no banco
+            Registre Income, Expense e Transfer
           </p>
         </div>
         <button

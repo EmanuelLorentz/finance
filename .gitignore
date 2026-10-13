@@ -15,6 +15,11 @@ dist-ssr
 .env.*
 !.env.example
 
+# Dados financeiros locais. O exemplo e o README permanecem no Git.
+data/*.md
+!data/*.example.md
+!data/README.md
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

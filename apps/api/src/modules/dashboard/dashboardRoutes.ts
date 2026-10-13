@@ -6,10 +6,9 @@ import type {
   MonthlyComparison,
   Transaction,
 } from '@finance/shared';
-import { prisma } from '../../db/prisma.js';
-import { mapGoal, mapTransaction, mapUpcomingPayment } from '../../utils/mappers.js';
-
-const BASE_BALANCE = 20000;
+import { markdownStore } from '../../db/markdownStore.js';
+import { joinTransactions, presentGoal, presentUpcomingPayment } from '../../db/present.js';
+import { mapTransaction, parseDateOnly } from '../../utils/mappers.js';
 
 function monthKey(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -29,27 +28,17 @@ function calculateNetBalance(transactions: Transaction[]): number {
     if (transaction.type === 'income') return total + transaction.amount;
     if (transaction.type === 'expense') return total - transaction.amount;
     return total;
-  }, BASE_BALANCE);
+  }, 0);
 }
 
 export async function dashboardRoutes(app: FastifyInstance) {
   app.get('/dashboard', async (): Promise<DashboardData> => {
-    const [transactions, goals, upcomingPayments] = await Promise.all([
-      prisma.transaction.findMany({
-        include: {
-          category: true,
-          project: true,
-        },
-        orderBy: { date: 'desc' },
-      }),
-      prisma.goal.findMany({
-        orderBy: { deadline: 'asc' },
-      }),
-      prisma.upcomingPayment.findMany({
-        where: { isPaid: false },
-        orderBy: { dueDate: 'asc' },
-      }),
-    ]);
+    const snapshot = await markdownStore.readSnapshot();
+    const transactions = joinTransactions(snapshot);
+    const goals = [...snapshot.goals].sort((left, right) => left.deadline.localeCompare(right.deadline));
+    const upcomingPayments = snapshot.upcomingPayments
+      .filter((payment) => !payment.isPaid)
+      .sort((left, right) => left.dueDate.localeCompare(right.dueDate));
 
     const balanceTransactions = transactions.filter(
       (transaction) => !transaction.project || transaction.project.impactsBalance,
@@ -58,7 +47,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
     const mappedTransactions = transactions.map(mapTransaction);
 
     const currentMonthTransactions = mappedBalanceTransactions.filter((transaction) =>
-      isCurrentMonth(new Date(transaction.date)),
+      isCurrentMonth(parseDateOnly(transaction.date)),
     );
 
     const monthlyIncome = currentMonthTransactions
@@ -111,7 +100,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
       monthlyComparisonMap.set(key, comparison);
     });
 
-    let cumulative = BASE_BALANCE;
+    let cumulative = 0;
     Array.from(monthlyComparisonMap.entries()).forEach(([key, comparison]) => {
       cumulative += comparison.income - comparison.expense;
       balanceHistoryMap.set(key, {
@@ -139,8 +128,8 @@ export async function dashboardRoutes(app: FastifyInstance) {
       monthlyComparison: Array.from(monthlyComparisonMap.values()).slice(-6),
       categoryExpenses,
       recentTransactions: mappedTransactions.slice(0, 10),
-      upcomingPayments: upcomingPayments.map(mapUpcomingPayment),
-      goals: goals.map(mapGoal),
+      upcomingPayments: upcomingPayments.map(presentUpcomingPayment),
+      goals: goals.map(presentGoal),
       indicators: [
         {
           id: 'savings-rate',
