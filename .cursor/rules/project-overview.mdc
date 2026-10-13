@@ -9,16 +9,13 @@ This project is a personal finance management application.
 
 ## Current Scope
 
-- Front-end only.
-- Back-end will be implemented later.
+- Web (`apps/web`) e API (`apps/api`) rodam na máquina local.
+- Os dados ficam em Markdown na pasta `data/`. Não há banco externo.
 
-## Mock Data
+## Data
 
-All screens must use mock data that mirrors the shape of future REST API responses.
-
-- Keep mock data in dedicated files (e.g. `src/mocks/`).
-- Structure mock objects to match expected API response contracts.
-- Never inline hardcoded data directly inside components.
+- A interface lê e grava pela API. Componentes não acessam arquivos nem importam dados fixos.
+- Não coloque valores de negócio direto no JSX (labels de listas, amounts, categories).
 
 ## Design Principles
 

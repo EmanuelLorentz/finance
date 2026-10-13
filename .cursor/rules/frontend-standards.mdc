@@ -29,12 +29,10 @@ Before creating any new component, page, hook or utility:
 - Keep data transformation and formatting outside of JSX.
 - If a hook already encapsulates a piece of logic, reuse it — do not extract the same logic again elsewhere.
 
-## Mock Data
+## Data
 
-- All mock data lives in `src/mocks/`.
-- Components receive data via props or hooks — never import mock files directly inside components.
-- Mock data must match the shape of future API responses exactly.
-- No hardcoded values that will eventually come from the API (labels, lists, amounts, categories, etc.).
+- Components receive data via props or hooks. They do not fetch and they do not read Markdown files.
+- No hardcoded values that belong to the API (labels, lists, amounts, categories, etc.).
 
 ## File Organization
 
@@ -43,8 +41,7 @@ src/
   components/    # Reusable UI components
   pages/         # Page-level components (one per route)
   hooks/         # Custom React hooks
-  mocks/         # Static mock data
-  services/      # Future API integration layer (create stubs now)
+  services/      # API client used by hooks
   types/         # Shared TypeScript types and interfaces
   utils/         # Pure utility functions
 ```

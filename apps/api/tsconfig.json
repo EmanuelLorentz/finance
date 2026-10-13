@@ -11,10 +11,10 @@
     "declaration": true,
     "sourceMap": true,
     "outDir": "dist",
-    "rootDir": ".",
+    "rootDir": "src",
     "composite": true,
     "types": ["node"]
   },
-  "include": ["src", "prisma/seed.ts"],
+  "include": ["src"],
   "references": [{ "path": "../../packages/shared" }]
 }

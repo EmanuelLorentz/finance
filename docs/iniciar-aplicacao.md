@@ -139,8 +139,6 @@ Resposta esperada do health check:
 | `npm run dev:web` | Web em modo desenvolvimento |
 | `npm run build` | Build de shared, API e web |
 | `npm run lint` | Lint em todos os workspaces |
-| `npm run db:migrate` | Legado Postgres — não é necessário no modo Markdown |
-| `npm run db:seed` | Legado Postgres — não grava nos arquivos locais |
 
 ---
 
@@ -168,7 +166,7 @@ npm run preview:web
 
 ### API não sobe
 
-- Confirme que `apps/api/.env` não exige `DATABASE_URL`. O exemplo atual só precisa de `PORT` e `WEB_ORIGIN`.
+- Confira `PORT` e `WEB_ORIGIN` em `apps/api/.env`.
 - Se um Markdown foi editado à mão e a API responder 500, confira o bloco YAML com `data/finance.example.md`.
 
 ### Porta já em uso
@@ -182,7 +180,7 @@ npm run preview:web
 - Confirme que a API está rodando (`npm run dev:api`)
 - Verifique se `VITE_API_URL` corresponde à porta real da API
 - Reinicie o Vite após alterar variáveis `VITE_*`
-- Erros de rede agora **aparecem na UI** (não há mais fallback silencioso para mocks)
+- Erros de rede aparecem na UI
 
 ---
 
