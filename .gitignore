@@ -15,6 +15,9 @@ dist-ssr
 .env.*
 !.env.example
 
+# Documentação de uso, só na máquina local.
+docs/privado.md
+
 # Dados financeiros locais. O exemplo e o README permanecem no Git.
 data/*.md
 !data/*.example.md
