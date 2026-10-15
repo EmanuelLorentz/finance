@@ -12,6 +12,7 @@ export async function buildApp() {
 
   await app.register(cors, {
     origin: env.WEB_ORIGIN,
+    methods: ['GET', 'HEAD', 'POST', 'DELETE'],
   });
 
   app.get('/health', async () => ({ status: 'ok' }));

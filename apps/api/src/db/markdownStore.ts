@@ -342,6 +342,19 @@ export const markdownStore = {
     });
   },
 
+  async deleteTransaction(id: string): Promise<void> {
+    return enqueue(async () => {
+      const transactions = await readCollection<StoredTransaction>('transactions');
+      const remaining = transactions.filter((transaction) => transaction.id !== id);
+
+      if (remaining.length === transactions.length) {
+        throw new StoreError('Transaction not found', 404);
+      }
+
+      await writeCollection('transactions', remaining);
+    });
+  },
+
   async listGoals(): Promise<StoredGoal[]> {
     return enqueue(async () => {
       const goals = await readCollection<StoredGoal>('goals');

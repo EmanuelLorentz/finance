@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { CreateTransactionData, Transaction } from '@finance/shared';
-import { createTransaction, fetchTransactions } from '../services/transactionService';
+import { createTransaction, deleteTransaction, fetchTransactions } from '../services/transactionService';
 
 interface UseTransactionsResult {
   transactions: Transaction[];
   isLoading: boolean;
   hasError: boolean;
   isSubmitting: boolean;
+  isDeleting: boolean;
   addTransaction: (data: CreateTransactionData) => Promise<Transaction>;
+  removeTransaction: (id: string) => Promise<void>;
   refresh: () => Promise<void>;
 }
 
@@ -16,6 +18,7 @@ export function useTransactions(): UseTransactionsResult {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const refresh = useCallback(async () => {
     setHasError(false);
@@ -61,12 +64,24 @@ export function useTransactions(): UseTransactionsResult {
     }
   }
 
+  async function removeTransaction(id: string): Promise<void> {
+    setIsDeleting(true);
+    try {
+      await deleteTransaction(id);
+      setTransactions((prev) => prev.filter((transaction) => transaction.id !== id));
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
   return {
     transactions,
     isLoading,
     hasError,
     isSubmitting,
+    isDeleting,
     addTransaction,
+    removeTransaction,
     refresh,
   };
 }

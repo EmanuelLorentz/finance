@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { ArrowLeftRight, Plus } from 'lucide-react';
-import type { CreateTransactionData } from '@finance/shared';
+import type { CreateTransactionData, Transaction } from '@finance/shared';
 import { CreateTransactionForm } from '../components/transactions/CreateTransactionForm';
+import { TransactionActions } from '../components/transactions/TransactionActions';
 import { Badge } from '../components/ui/Badge';
 import { Modal } from '../components/ui/Modal';
 import { useProjectsContext } from '../hooks/useProjectsContext';
@@ -15,10 +16,14 @@ const TYPE_LABELS = {
 } as const;
 
 export function TransactionsPage() {
-  const { transactions, isLoading, hasError, isSubmitting, addTransaction } = useTransactions();
+  const { transactions, isLoading, hasError, isSubmitting, isDeleting, addTransaction, removeTransaction } =
+    useTransactions();
   const { projects } = useProjectsContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [transactionToDelete, setTransactionToDelete] = useState<Transaction | null>(null);
+  const [deleteError, setDeleteError] = useState('');
 
   async function handleCreateTransaction(data: CreateTransactionData) {
     setSubmitError('');
@@ -27,6 +32,18 @@ export function TransactionsPage() {
       setIsModalOpen(false);
     } catch {
       setSubmitError('Não foi possível salvar a Transaction. Verifique se a API está no ar.');
+    }
+  }
+
+  async function handleConfirmDelete() {
+    if (!transactionToDelete) return;
+
+    setDeleteError('');
+    try {
+      await removeTransaction(transactionToDelete.id);
+      setTransactionToDelete(null);
+    } catch {
+      setDeleteError('Não foi possível excluir a Transaction. Verifique se a API está no ar.');
     }
   }
 
@@ -94,6 +111,9 @@ export function TransactionsPage() {
                   <th className="px-4 py-3 text-xs font-medium text-secondary">Data</th>
                   <th className="px-4 py-3 text-xs font-medium text-secondary">Conta</th>
                   <th className="px-4 py-3 text-xs font-medium text-secondary text-right">Valor</th>
+                  <th className="px-4 py-3">
+                    <span className="sr-only">Ações</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -118,6 +138,21 @@ export function TransactionsPage() {
                       {transaction.type === 'income' ? '+' : transaction.type === 'expense' ? '-' : ''}
                       {formatCurrency(transaction.amount)}
                     </td>
+                    <td className="px-2 py-2">
+                      <TransactionActions
+                        description={transaction.description}
+                        isOpen={openMenuId === transaction.id}
+                        onToggle={() =>
+                          setOpenMenuId((current) => (current === transaction.id ? null : transaction.id))
+                        }
+                        onClose={() => setOpenMenuId((current) => (current === transaction.id ? null : current))}
+                        onDelete={() => {
+                          setOpenMenuId(null);
+                          setDeleteError('');
+                          setTransactionToDelete(transaction);
+                        }}
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -140,6 +175,37 @@ export function TransactionsPage() {
           isSubmitting={isSubmitting}
           projects={projects}
         />
+      </Modal>
+
+      <Modal
+        isOpen={transactionToDelete !== null}
+        onClose={() => {
+          if (!isDeleting) setTransactionToDelete(null);
+        }}
+        title="Excluir Transaction"
+      >
+        <p className="text-sm text-secondary">
+          Excluir {transactionToDelete?.description}? Essa Transaction sai da lista e do arquivo local.
+        </p>
+        {deleteError && <p className="mt-3 text-xs text-negative">{deleteError}</p>}
+        <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-border">
+          <button
+            type="button"
+            onClick={() => setTransactionToDelete(null)}
+            disabled={isDeleting}
+            className="px-4 py-2 text-sm text-secondary hover:text-primary transition-colors duration-150 disabled:opacity-50"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={handleConfirmDelete}
+            disabled={isDeleting}
+            className="px-4 py-2 text-sm font-medium text-negative border border-negative/40 rounded-lg hover:bg-negative/10 transition-colors duration-150 disabled:opacity-50"
+          >
+            Excluir
+          </button>
+        </div>
       </Modal>
     </div>
   );

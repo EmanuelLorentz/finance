@@ -8,3 +8,7 @@ export async function fetchTransactions(): Promise<Transaction[]> {
 export async function createTransaction(data: CreateTransactionData): Promise<Transaction> {
   return httpClient.post<Transaction>('/transactions', data);
 }
+
+export async function deleteTransaction(id: string): Promise<void> {
+  return httpClient.delete(`/transactions/${id}`);
+}
