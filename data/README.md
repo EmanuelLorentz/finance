@@ -5,6 +5,7 @@ A API grava as finanças em Markdown nesta pasta. Esses arquivos ficam na sua m�
 | Arquivo | Conteúdo |
 |---------|----------|
 | `categories.md` | Categories |
+| `accounts.md` | Contas |
 | `projects.md` | Projects |
 | `transactions.md` | Transactions |
 | `goals.md` | Goals |

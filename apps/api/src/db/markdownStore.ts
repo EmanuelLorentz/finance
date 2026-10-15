@@ -3,13 +3,18 @@ import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { existsSync, readFileSync } from 'node:fs';
-import type { CreateProjectData, CreateTransactionData, TransactionType } from '@finance/shared';
+import type {
+  CreateAccountData,
+  CreateCategoryData,
+  CreateProjectData,
+  CreateTransactionData,
+  TransactionType,
+} from '@finance/shared';
 import { parse, stringify } from 'yaml';
 import { z } from 'zod';
 import { env } from '../env.js';
 import { todayDateOnly } from '../utils/mappers.js';
 
-const DEFAULT_CATEGORY_COLOR = '#6b7280';
 const YAML_FENCE = /```ya?ml\r?\n([\s\S]*?)```/;
 
 const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
@@ -60,7 +65,13 @@ const upcomingPaymentSchema = z.object({
   isPaid: z.boolean(),
 });
 
+const accountSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+});
+
 export type StoredCategory = z.infer<typeof categorySchema>;
+export type StoredAccount = z.infer<typeof accountSchema>;
 export type StoredProject = z.infer<typeof projectSchema>;
 export type StoredTransaction = z.infer<typeof transactionSchema>;
 export type StoredGoal = z.infer<typeof goalSchema>;
@@ -87,6 +98,12 @@ const collections = {
     title: 'Categories',
     description: 'Classificações usadas nas transactions. Edite apenas o bloco YAML.',
     schema: z.array(categorySchema),
+  },
+  accounts: {
+    fileName: 'accounts.md',
+    title: 'Accounts',
+    description: 'Contas usadas nas transactions. Edite apenas o bloco YAML.',
+    schema: z.array(accountSchema),
   },
   projects: {
     fileName: 'projects.md',
@@ -229,6 +246,32 @@ async function writeCollection<T>(name: CollectionName, records: T[]): Promise<v
   await writeAtomic(filePath, renderMarkdown(definition, records));
 }
 
+function byName(left: { name: string }, right: { name: string }): number {
+  return left.name.localeCompare(right.name, 'pt-BR');
+}
+
+async function syncAccounts(
+  accounts: StoredAccount[],
+  transactions: StoredTransaction[],
+): Promise<StoredAccount[]> {
+  const known = new Set(accounts.map((account) => account.name));
+  const missing = [...new Set(transactions.map((transaction) => transaction.account))].filter(
+    (name) => name && !known.has(name),
+  );
+
+  if (missing.length === 0) return accounts;
+
+  const next = [
+    ...accounts,
+    ...missing.map((name) => ({
+      id: randomUUID(),
+      name,
+    })),
+  ];
+  await writeCollection('accounts', next);
+  return next;
+}
+
 function byDateDescending(left: string, right: string): number {
   return right.localeCompare(left);
 }
@@ -298,31 +341,135 @@ export const markdownStore = {
   },
 
   async listCategories(): Promise<StoredCategory[]> {
-    return enqueue(() => readCollection<StoredCategory>('categories'));
+    return enqueue(async () => {
+      const categories = await readCollection<StoredCategory>('categories');
+      return categories.sort(byName);
+    });
+  },
+
+  async createCategory(input: CreateCategoryData): Promise<StoredCategory> {
+    return enqueue(async () => {
+      const categories = await readCollection<StoredCategory>('categories');
+      const name = input.name.trim();
+
+      if (categories.some((category) => category.name === name)) {
+        throw new StoreError('Já existe uma Category com esse nome.', 400);
+      }
+
+      const category: StoredCategory = {
+        id: randomUUID(),
+        name,
+        color: input.color,
+      };
+      categories.push(category);
+      await writeCollection('categories', categories);
+      return category;
+    });
+  },
+
+  async deleteCategory(id: string): Promise<void> {
+    return enqueue(async () => {
+      const [categories, transactions] = await Promise.all([
+        readCollection<StoredCategory>('categories'),
+        readCollection<StoredTransaction>('transactions'),
+      ]);
+      const category = categories.find((item) => item.id === id);
+
+      if (!category) {
+        throw new StoreError('Category not found', 404);
+      }
+
+      if (transactions.some((transaction) => transaction.categoryId === id)) {
+        throw new StoreError('Essa Category está em uma Transaction e não pode ser excluída.', 400);
+      }
+
+      await writeCollection(
+        'categories',
+        categories.filter((item) => item.id !== id),
+      );
+    });
+  },
+
+  async listAccounts(): Promise<StoredAccount[]> {
+    return enqueue(async () => {
+      const [accounts, transactions] = await Promise.all([
+        readCollection<StoredAccount>('accounts'),
+        readCollection<StoredTransaction>('transactions'),
+      ]);
+      const synced = await syncAccounts(accounts, transactions);
+      return synced.sort(byName);
+    });
+  },
+
+  async createAccount(input: CreateAccountData): Promise<StoredAccount> {
+    return enqueue(async () => {
+      const [accounts, transactions] = await Promise.all([
+        readCollection<StoredAccount>('accounts'),
+        readCollection<StoredTransaction>('transactions'),
+      ]);
+      const synced = await syncAccounts(accounts, transactions);
+      const name = input.name.trim();
+
+      if (synced.some((account) => account.name === name)) {
+        throw new StoreError('Já existe uma conta com esse nome.', 400);
+      }
+
+      const account: StoredAccount = {
+        id: randomUUID(),
+        name,
+      };
+      synced.push(account);
+      await writeCollection('accounts', synced);
+      return account;
+    });
+  },
+
+  async deleteAccount(id: string): Promise<void> {
+    return enqueue(async () => {
+      const [accounts, transactions] = await Promise.all([
+        readCollection<StoredAccount>('accounts'),
+        readCollection<StoredTransaction>('transactions'),
+      ]);
+      const synced = await syncAccounts(accounts, transactions);
+      const account = synced.find((item) => item.id === id);
+
+      if (!account) {
+        throw new StoreError('Account not found', 404);
+      }
+
+      if (transactions.some((transaction) => transaction.account === account.name)) {
+        throw new StoreError('Essa conta está em uma Transaction e não pode ser excluída.', 400);
+      }
+
+      await writeCollection(
+        'accounts',
+        synced.filter((item) => item.id !== id),
+      );
+    });
   },
 
   async createTransaction(input: CreateTransactionData): Promise<StoredTransaction> {
     return enqueue(async () => {
       const projectId = input.projectId || undefined;
-      const [categories, projects, transactions] = await Promise.all([
+      const [categories, projects, transactions, storedAccounts] = await Promise.all([
         readCollection<StoredCategory>('categories'),
         readCollection<StoredProject>('projects'),
         readCollection<StoredTransaction>('transactions'),
+        readCollection<StoredAccount>('accounts'),
       ]);
+      const accounts = await syncAccounts(storedAccounts, transactions);
 
       if (projectId && !projects.some((project) => project.id === projectId)) {
         throw new StoreError('Project not found', 400);
       }
 
-      let category = categories.find((item) => item.name === input.category);
+      const category = categories.find((item) => item.name === input.category);
       if (!category) {
-        category = {
-          id: randomUUID(),
-          name: input.category,
-          color: DEFAULT_CATEGORY_COLOR,
-        };
-        categories.push(category);
-        await writeCollection('categories', categories);
+        throw new StoreError('Selecione uma Category cadastrada.', 400);
+      }
+
+      if (!accounts.some((account) => account.name === input.account)) {
+        throw new StoreError('Selecione uma conta cadastrada.', 400);
       }
 
       const transaction: StoredTransaction = {

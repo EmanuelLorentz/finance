@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import type { CreateTransactionData, Project, TransactionType } from '@finance/shared';
+import type { Account, Category, CreateTransactionData, Project, TransactionType } from '@finance/shared';
+import { SearchSelect } from '../ui/SearchSelect';
 import { TRANSACTION_TYPE_OPTIONS } from '../../utils/transactionTypeLabel';
 
 interface CreateTransactionFormProps {
@@ -7,6 +8,8 @@ interface CreateTransactionFormProps {
   onCancel: () => void;
   isSubmitting?: boolean;
   projects?: Project[];
+  categories?: Category[];
+  accounts?: Account[];
 }
 
 function todayIsoDate(): string {
@@ -22,6 +25,8 @@ export function CreateTransactionForm({
   onCancel,
   isSubmitting = false,
   projects = [],
+  categories = [],
+  accounts = [],
 }: CreateTransactionFormProps) {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
@@ -41,9 +46,13 @@ export function CreateTransactionForm({
     if (!amount || Number.isNaN(parsedAmount) || parsedAmount < 0) {
       nextErrors.amount = 'Informe um valor válido.';
     }
-    if (!category.trim()) nextErrors.category = 'A Category é obrigatória.';
+    if (!categories.some((item) => item.name === category)) {
+      nextErrors.category = 'Selecione uma Category cadastrada.';
+    }
     if (!date) nextErrors.date = 'A data é obrigatória.';
-    if (!account.trim()) nextErrors.account = 'A conta é obrigatória.';
+    if (!accounts.some((item) => item.name === account)) {
+      nextErrors.account = 'Selecione uma conta cadastrada.';
+    }
 
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
@@ -153,13 +162,14 @@ export function CreateTransactionForm({
             <label htmlFor="transaction-category" className={labelClass}>
               Category <span className="text-negative">*</span>
             </label>
-            <input
+            <SearchSelect
               id="transaction-category"
-              type="text"
+              options={categories.map((item) => ({ id: item.id, label: item.name, color: item.color }))}
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              placeholder="Ex: Alimentação"
-              className={`${inputClass} ${errors.category ? 'border-negative' : ''}`}
+              onChange={setCategory}
+              placeholder="Buscar Category"
+              emptyMessage="Nenhuma Category cadastrada"
+              invalid={Boolean(errors.category)}
             />
             {errors.category && <p className="mt-1 text-xs text-negative">{errors.category}</p>}
           </div>
@@ -168,13 +178,14 @@ export function CreateTransactionForm({
             <label htmlFor="transaction-account" className={labelClass}>
               Conta <span className="text-negative">*</span>
             </label>
-            <input
+            <SearchSelect
               id="transaction-account"
-              type="text"
+              options={accounts.map((item) => ({ id: item.id, label: item.name }))}
               value={account}
-              onChange={(e) => setAccount(e.target.value)}
-              placeholder="Ex: Conta corrente"
-              className={`${inputClass} ${errors.account ? 'border-negative' : ''}`}
+              onChange={setAccount}
+              placeholder="Buscar conta"
+              emptyMessage="Nenhuma conta cadastrada"
+              invalid={Boolean(errors.account)}
             />
             {errors.account && <p className="mt-1 text-xs text-negative">{errors.account}</p>}
           </div>

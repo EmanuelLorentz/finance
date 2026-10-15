@@ -26,6 +26,21 @@ export const transactionSchema = z.object({
 
 export const createTransactionSchema = transactionSchema.omit({ id: true });
 
+export const categorySchema = z.object({
+  id: z.string(),
+  name: z.string().min(1),
+  color: z.string().min(1),
+});
+
+export const createCategorySchema = categorySchema.omit({ id: true });
+
+export const accountSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1),
+});
+
+export const createAccountSchema = accountSchema.omit({ id: true });
+
 export const projectSchema = z.object({
   id: z.string(),
   name: z.string().min(1),
@@ -111,6 +126,10 @@ export const dashboardDataSchema = z.object({
 export type TransactionType = z.infer<typeof transactionTypeSchema>;
 export type Transaction = z.infer<typeof transactionSchema>;
 export type CreateTransactionData = z.infer<typeof createTransactionSchema>;
+export type Category = z.infer<typeof categorySchema>;
+export type CreateCategoryData = z.infer<typeof createCategorySchema>;
+export type Account = z.infer<typeof accountSchema>;
+export type CreateAccountData = z.infer<typeof createAccountSchema>;
 export type Project = z.infer<typeof projectSchema>;
 export type CreateProjectData = z.infer<typeof createProjectSchema>;
 export type Goal = z.infer<typeof goalSchema>;

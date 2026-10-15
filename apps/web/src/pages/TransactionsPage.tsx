@@ -5,6 +5,8 @@ import { CreateTransactionForm } from '../components/transactions/CreateTransact
 import { TransactionActions } from '../components/transactions/TransactionActions';
 import { Badge } from '../components/ui/Badge';
 import { Modal } from '../components/ui/Modal';
+import { useAccounts } from '../hooks/useAccounts';
+import { useCategories } from '../hooks/useCategories';
 import { useProjectsContext } from '../hooks/useProjectsContext';
 import { useTransactions } from '../hooks/useTransactions';
 import { formatCurrency, formatDate } from '../utils/format';
@@ -14,6 +16,8 @@ export function TransactionsPage() {
   const { transactions, isLoading, hasError, isSubmitting, isDeleting, addTransaction, removeTransaction } =
     useTransactions();
   const { projects } = useProjectsContext();
+  const { categories } = useCategories();
+  const { accounts } = useAccounts();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -25,8 +29,12 @@ export function TransactionsPage() {
     try {
       await addTransaction(data);
       setIsModalOpen(false);
-    } catch {
-      setSubmitError('Não foi possível salvar a Transaction. Verifique se a API está no ar.');
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível salvar a Transaction. Verifique se a API está no ar.',
+      );
     }
   }
 
@@ -171,6 +179,8 @@ export function TransactionsPage() {
           onCancel={() => setIsModalOpen(false)}
           isSubmitting={isSubmitting}
           projects={projects}
+          categories={categories}
+          accounts={accounts}
         />
       </Modal>
 

@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   ArrowLeftRight,
   Tag,
+  Landmark,
   Target,
   BarChart2,
   Settings,
@@ -26,6 +27,7 @@ const TOP_NAV_ITEMS: NavItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/' },
   { id: 'transactions', label: 'Transações', icon: ArrowLeftRight, path: '/transacoes' },
   { id: 'categories', label: 'Categorias', icon: Tag, path: '/categorias' },
+  { id: 'accounts', label: 'Contas', icon: Landmark, path: '/contas' },
   { id: 'goals', label: 'Metas', icon: Target, path: '/metas' },
 ];
 

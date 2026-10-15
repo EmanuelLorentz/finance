@@ -12,7 +12,14 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   });
 
   if (!response.ok) {
-    throw new Error(`Request failed with status ${response.status}`);
+    let message = `Request failed with status ${response.status}`;
+    try {
+      const body = (await response.json()) as { message?: string };
+      if (body.message) message = body.message;
+    } catch {
+      message = `Request failed with status ${response.status}`;
+    }
+    throw new Error(message);
   }
 
   if (response.status === 204) {

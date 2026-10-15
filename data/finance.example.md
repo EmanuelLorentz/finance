@@ -10,6 +10,13 @@ A API não lê este arquivo. Ele só documenta o formato dos Markdown reais, cri
   color: "#4ade80"
 ```
 
+## Accounts
+
+```yaml
+- id: account-nubank
+  name: Nubank
+```
+
 ## Projects
 
 ```yaml

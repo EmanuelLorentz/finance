@@ -74,6 +74,7 @@ Não é preciso configurar banco. A API cria os arquivos na primeira consulta.
 Não há migration nem seed. Ao abrir o dashboard, a API cria em `data/`:
 
 - `categories.md`
+- `accounts.md`
 - `projects.md`
 - `transactions.md`
 - `goals.md`
