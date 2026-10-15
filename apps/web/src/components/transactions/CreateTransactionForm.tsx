@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { CreateTransactionData, Project, TransactionType } from '@finance/shared';
+import { TRANSACTION_TYPE_OPTIONS } from '../../utils/transactionTypeLabel';
 
 interface CreateTransactionFormProps {
   onSubmit: (data: CreateTransactionData) => void;
@@ -7,12 +8,6 @@ interface CreateTransactionFormProps {
   isSubmitting?: boolean;
   projects?: Project[];
 }
-
-const TYPE_OPTIONS: { value: TransactionType; label: string }[] = [
-  { value: 'income', label: 'Income' },
-  { value: 'expense', label: 'Expense' },
-  { value: 'transfer', label: 'Transfer' },
-];
 
 function todayIsoDate(): string {
   const now = new Date();
@@ -128,20 +123,28 @@ export function CreateTransactionForm({
         <div>
           <p className={labelClass}>Tipo <span className="text-negative">*</span></p>
           <div className="flex gap-2">
-            {TYPE_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => setType(option.value)}
-                className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-colors duration-150 ${
-                  type === option.value
-                    ? 'border-accent bg-accent/10 text-accent'
-                    : 'border-border bg-surface-raised text-secondary hover:text-primary'
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
+            {TRANSACTION_TYPE_OPTIONS.map((option) => {
+              const isSelected = type === option.value;
+              const selectedClass =
+                option.value === 'income'
+                  ? 'border-accent bg-accent/10 text-accent'
+                  : 'border-negative bg-negative/10 text-negative';
+
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setType(option.value)}
+                  className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-colors duration-150 ${
+                    isSelected
+                      ? selectedClass
+                      : 'border-border bg-surface-raised text-secondary hover:text-primary'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 

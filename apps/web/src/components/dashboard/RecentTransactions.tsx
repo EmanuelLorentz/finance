@@ -1,13 +1,8 @@
 import type { Transaction } from '@finance/shared';
 import { formatCurrency, formatDate } from '../../utils/format';
+import { transactionTypeLabel } from '../../utils/transactionTypeLabel';
 import { Badge } from '../ui/Badge';
 import { Card } from '../ui/Card';
-
-const TYPE_LABELS: Record<Transaction['type'], string> = {
-  income: 'Receita',
-  expense: 'Despesa',
-  transfer: 'Transferência',
-};
 
 interface RecentTransactionsProps {
   transactions: Transaction[];
@@ -28,7 +23,9 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
               </span>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-muted">{formatDate(transaction.date)}</span>
-                <Badge variant={transaction.type}>{TYPE_LABELS[transaction.type]}</Badge>
+                <Badge variant={transaction.type === 'income' ? 'income' : 'expense'}>
+                  {transactionTypeLabel(transaction.type)}
+                </Badge>
               </div>
             </div>
             <span

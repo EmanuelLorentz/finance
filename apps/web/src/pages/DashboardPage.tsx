@@ -61,14 +61,14 @@ export function DashboardPage() {
           icon={Wallet}
         />
         <SummaryCard
-          title="Receitas do Mês"
+          title="Entradas do Mês"
           value={summary.monthlyIncome}
           changePercent={summary.incomeChangePercent}
           icon={TrendingUp}
           variant="income"
         />
         <SummaryCard
-          title="Despesas do Mês"
+          title="Saídas do Mês"
           value={summary.monthlyExpenses}
           changePercent={summary.expenseChangePercent}
           icon={TrendingDown}

@@ -8,12 +8,7 @@ import { Modal } from '../components/ui/Modal';
 import { useProjectsContext } from '../hooks/useProjectsContext';
 import { useTransactions } from '../hooks/useTransactions';
 import { formatCurrency, formatDate } from '../utils/format';
-
-const TYPE_LABELS = {
-  income: 'Income',
-  expense: 'Expense',
-  transfer: 'Transfer',
-} as const;
+import { transactionTypeLabel } from '../utils/transactionTypeLabel';
 
 export function TransactionsPage() {
   const { transactions, isLoading, hasError, isSubmitting, isDeleting, addTransaction, removeTransaction } =
@@ -69,7 +64,7 @@ export function TransactionsPage() {
         <div>
           <h1 className="text-lg font-semibold text-primary">Transações</h1>
           <p className="text-xs text-secondary mt-0.5">
-            Registre Income, Expense e Transfer
+            Registre Entrada e Saída
           </p>
         </div>
         <button
@@ -122,7 +117,9 @@ export function TransactionsPage() {
                     <td className="px-4 py-3 text-sm text-primary">{transaction.description}</td>
                     <td className="px-4 py-3 text-sm text-secondary">{transaction.category}</td>
                     <td className="px-4 py-3">
-                      <Badge variant={transaction.type}>{TYPE_LABELS[transaction.type]}</Badge>
+                      <Badge variant={transaction.type === 'income' ? 'income' : 'expense'}>
+                        {transactionTypeLabel(transaction.type)}
+                      </Badge>
                     </td>
                     <td className="px-4 py-3 text-sm text-secondary">{formatDate(transaction.date)}</td>
                     <td className="px-4 py-3 text-sm text-secondary">{transaction.account}</td>

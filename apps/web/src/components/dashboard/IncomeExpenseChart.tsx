@@ -30,7 +30,7 @@ function CustomTooltip({ active, payload, label }: ChartTooltipProps) {
       <p className="text-secondary mb-2">{label}</p>
       {payload.map((entry, index) => (
         <p key={index} className="font-medium" style={{ color: entry.color }}>
-          {entry.dataKey === 'income' ? 'Receitas' : 'Despesas'}: {formatCurrency(entry.value ?? 0)}
+          {entry.dataKey === 'income' ? 'Entradas' : 'Saídas'}: {formatCurrency(entry.value ?? 0)}
         </p>
       ))}
     </div>
@@ -42,11 +42,11 @@ function ChartLegend() {
     <div className="flex items-center gap-4">
       <div className="flex items-center gap-1.5 text-xs text-secondary">
         <span className="w-2.5 h-2.5 rounded-sm bg-accent inline-block" />
-        Receitas
+        Entradas
       </div>
       <div className="flex items-center gap-1.5 text-xs text-secondary">
         <span className="w-2.5 h-2.5 rounded-sm bg-negative inline-block" />
-        Despesas
+        Saídas
       </div>
     </div>
   );
@@ -58,7 +58,7 @@ interface IncomeExpenseChartProps {
 
 export function IncomeExpenseChart({ data }: IncomeExpenseChartProps) {
   return (
-    <Card title="Receitas x Despesas" action={<ChartLegend />}>
+    <Card title="Entradas x Saídas" action={<ChartLegend />}>
       <div className="h-52">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }} barGap={4}>
