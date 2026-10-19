@@ -31,7 +31,11 @@ interface CategoryDistributionChartProps {
 export function CategoryDistributionChart({ data }: CategoryDistributionChartProps) {
   return (
     <Card title="Gastos por Categoria">
-      <div className="h-36">
+      {data.length === 0 ? (
+        <p className="text-sm text-secondary">Sem saídas neste mês.</p>
+      ) : (
+      <div>
+        <div className="h-36">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -66,7 +70,9 @@ export function CategoryDistributionChart({ data }: CategoryDistributionChartPro
             <span className="text-xs text-muted ml-2 shrink-0">{formatPercent(entry.percentage)}</span>
           </div>
         ))}
+        </div>
       </div>
+      )}
     </Card>
   );
 }

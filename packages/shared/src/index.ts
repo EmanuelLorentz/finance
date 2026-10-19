@@ -80,10 +80,10 @@ export const dashboardSummarySchema = z.object({
   monthlyIncome: z.number(),
   monthlyExpenses: z.number(),
   monthlySavings: z.number(),
-  balanceChangePercent: z.number(),
-  incomeChangePercent: z.number(),
-  expenseChangePercent: z.number(),
-  savingsChangePercent: z.number(),
+  balanceChangePercent: z.number().nullable(),
+  incomeChangePercent: z.number().nullable(),
+  expenseChangePercent: z.number().nullable(),
+  savingsRatePercent: z.number().nullable(),
 });
 
 export const balanceHistoryEntrySchema = z.object({

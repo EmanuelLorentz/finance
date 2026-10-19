@@ -1,7 +1,9 @@
-import { TrendingUp, TrendingDown, type LucideIcon } from 'lucide-react';
+import { Minus, TrendingDown, TrendingUp, type LucideIcon } from 'lucide-react';
 import { formatCurrency, formatPercent } from '../../utils/format';
 
 type CardVariant = 'default' | 'income' | 'expense' | 'savings';
+type Reading = 'higher-is-better' | 'lower-is-better' | 'share';
+type Tone = 'positive' | 'negative' | 'flat';
 
 const ICON_CLASSES: Record<CardVariant, string> = {
   default: 'text-secondary bg-surface-raised',
@@ -10,12 +12,31 @@ const ICON_CLASSES: Record<CardVariant, string> = {
   savings: 'text-blue-400 bg-blue-500/10',
 };
 
+const TONE_CLASSES: Record<Tone, string> = {
+  positive: 'text-accent',
+  negative: 'text-negative',
+  flat: 'text-secondary',
+};
+
 interface SummaryCardProps {
   title: string;
   value: number;
-  changePercent: number;
+  changePercent: number | null;
   icon: LucideIcon;
   variant?: CardVariant;
+  reading?: Reading;
+}
+
+function toneOf(changePercent: number, reading: Reading): Tone {
+  if (reading === 'share') {
+    if (changePercent > 0) return 'positive';
+    if (changePercent < 0) return 'negative';
+    return 'flat';
+  }
+
+  if (changePercent === 0) return 'flat';
+  const improved = reading === 'lower-is-better' ? changePercent < 0 : changePercent > 0;
+  return improved ? 'positive' : 'negative';
 }
 
 export function SummaryCard({
@@ -24,10 +45,19 @@ export function SummaryCard({
   changePercent,
   icon: Icon,
   variant = 'default',
+  reading = 'higher-is-better',
 }: SummaryCardProps) {
-  const isPositive = changePercent >= 0;
-  const TrendIcon = isPositive ? TrendingUp : TrendingDown;
-  const trendClass = isPositive ? 'text-accent' : 'text-negative';
+  const tone = changePercent === null ? null : toneOf(changePercent, reading);
+  const TrendIcon = changePercent === null || changePercent === 0
+    ? Minus
+    : changePercent > 0
+      ? TrendingUp
+      : TrendingDown;
+  const shownPercent = changePercent === null
+    ? null
+    : reading === 'share'
+      ? formatPercent(changePercent)
+      : formatPercent(Math.abs(changePercent));
 
   return (
     <div className="bg-surface border border-border rounded-xl p-5">
@@ -37,13 +67,17 @@ export function SummaryCard({
         >
           <Icon size={17} strokeWidth={1.75} />
         </div>
-        <div className={`flex items-center gap-1 text-xs font-medium ${trendClass}`}>
-          <TrendIcon size={12} />
-          <span>{formatPercent(Math.abs(changePercent))}</span>
-        </div>
+        {tone && shownPercent && (
+          <div className={`flex items-center gap-1 text-xs font-medium ${TONE_CLASSES[tone]}`}>
+            {reading !== 'share' && <TrendIcon size={12} />}
+            <span>{shownPercent}</span>
+          </div>
+        )}
       </div>
       <p className="text-xs text-secondary mb-1">{title}</p>
-      <p className="text-lg font-semibold text-primary">{formatCurrency(value)}</p>
+      <p className={`text-lg font-semibold ${value < 0 ? 'text-negative' : 'text-primary'}`}>
+        {formatCurrency(value)}
+      </p>
     </div>
   );
 }

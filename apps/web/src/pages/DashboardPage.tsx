@@ -73,13 +73,15 @@ export function DashboardPage() {
           changePercent={summary.expenseChangePercent}
           icon={TrendingDown}
           variant="expense"
+          reading="lower-is-better"
         />
         <SummaryCard
           title="Economia do Mês"
           value={summary.monthlySavings}
-          changePercent={summary.savingsChangePercent}
+          changePercent={summary.savingsRatePercent}
           icon={Banknote}
           variant="savings"
+          reading="share"
         />
       </div>
 

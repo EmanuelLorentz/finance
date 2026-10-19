@@ -15,6 +15,9 @@ interface FinancialIndicatorsProps {
 export function FinancialIndicators({ indicators }: FinancialIndicatorsProps) {
   return (
     <Card title="Indicadores Financeiros">
+      {indicators.length === 0 ? (
+        <p className="text-sm text-secondary">Sem base para calcular estes indicadores.</p>
+      ) : (
       <div className="space-y-0">
         {indicators.map((indicator) => {
           const { icon: TrendIcon, className } = TREND_CONFIG[indicator.trend];
@@ -35,6 +38,7 @@ export function FinancialIndicators({ indicators }: FinancialIndicatorsProps) {
           );
         })}
       </div>
+      )}
     </Card>
   );
 }
