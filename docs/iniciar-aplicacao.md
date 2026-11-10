@@ -4,7 +4,7 @@ Guia para rodar o projeto localmente em desenvolvimento. O repositório é um mo
 
 | App | Stack | Porta padrão |
 |-----|-------|--------------|
-| **API** (`apps/api`) | Fastify + arquivos Markdown | `3333` |
+| **API** (`apps/api`) | Java 21 + Spring Boot + arquivos Markdown | `3333` |
 | **Web** (`apps/web`) | React + Vite | `5173` |
 | **Dados** | `data/*.md` na raiz do repositório | — |
 
@@ -16,8 +16,11 @@ Os Markdown de dados reais são ignorados pelo Git. O formato está em `data/fin
 
 ## Pré-requisitos
 
+- **JDK** 21+ (testado com 22). O comando `java` precisa estar no `PATH` ou a variável `JAVA_HOME` precisa estar definida.
 - **Node.js** 20+ (testado com v22)
 - **npm** 10+
+
+Não é preciso instalar o Maven. A API usa o Maven Wrapper (`apps/api/mvnw` e `mvnw.cmd`), que baixa a versão certa na primeira execução.
 
 ---
 
@@ -29,7 +32,7 @@ Na raiz do repositório:
 npm install
 ```
 
-O projeto usa npm workspaces (`apps/*` e `packages/*`). Um único `npm install` na raiz instala tudo.
+O projeto usa npm workspaces (`apps/web` e `packages/*`). Um único `npm install` na raiz instala as dependências do front-end. As dependências da API são baixadas pelo Maven na primeira execução de `npm run dev:api`.
 
 ---
 
@@ -58,6 +61,8 @@ cp apps/web/.env.example apps/web/.env
 | `PORT` | Porta da API (`3333`) |
 | `WEB_ORIGIN` | Origem CORS do Vite (`http://localhost:5173`) |
 | `DATA_DIR` | Opcional. Pasta dos Markdown. Padrão: `data/` na raiz do repositório |
+
+A API lê o `.env` da pasta onde é iniciada (`apps/api`). Os scripts da raiz já rodam a API nessa pasta. Variáveis de ambiente do sistema têm prioridade sobre o `.env`.
 
 Não é preciso configurar banco. A API cria os arquivos na primeira consulta.
 
@@ -102,10 +107,12 @@ npm run dev:web
 
 ### O que acontece ao rodar `dev`
 
-| Comando | Passos automáticos (`predev`) | Servidor |
-|---------|-------------------------------|----------|
-| `npm run dev:api` | Build do `@finance/shared` | `tsx watch` na porta **3333** |
-| `npm run dev:web` | Build do `@finance/shared` | Vite na porta **5173** |
+| Comando | Passos automáticos | Servidor |
+|---------|--------------------|----------|
+| `npm run dev:api` | Maven Wrapper compila a API (`spring-boot:run`) | Spring Boot na porta **3333** |
+| `npm run dev:web` | Build do `@finance/shared` (`predev`) | Vite na porta **5173** |
+
+A primeira execução de `dev:api` demora mais porque o Maven baixa as dependências. Com o Spring Boot DevTools, a API reinicia sozinha quando as classes são recompiladas pela IDE.
 
 ---
 
@@ -138,8 +145,10 @@ Resposta esperada do health check:
 |--------|-----------|
 | `npm run dev:api` | API em modo desenvolvimento |
 | `npm run dev:web` | Web em modo desenvolvimento |
+| `npm run test:api` | Testes da API (JUnit) |
 | `npm run build` | Build de shared, API e web |
-| `npm run lint` | Lint em todos os workspaces |
+| `npm run start:api` | Roda a API compilada (`apps/api/target/finance-api.jar`) |
+| `npm run lint` | Lint do shared e do web |
 
 ---
 
@@ -152,7 +161,7 @@ npm run build
 Para rodar a API compilada:
 
 ```bash
-npm run start -w @finance/api
+npm run start:api
 ```
 
 Para pré-visualizar o front-end compilado:
@@ -167,6 +176,7 @@ npm run preview:web
 
 ### API não sobe
 
+- Confira se `java -version` mostra a versão 21 ou superior.
 - Confira `PORT` e `WEB_ORIGIN` em `apps/api/.env`.
 - Se um Markdown foi editado à mão e a API responder 500, confira o bloco YAML com `data/finance.example.md`.
 
@@ -190,10 +200,11 @@ npm run preview:web
 ```
 finance/
 ├── apps/
-│   ├── api/          # Back-end (Fastify + Markdown)
+│   ├── api/          # Back-end (Java + Spring Boot + Markdown)
 │   └── web/          # Front-end (React + Vite)
 ├── data/             # Transactions, projects, categories, goals
 ├── packages/
-│   └── shared/       # Tipos e schemas Zod compartilhados
+│   └── shared/       # Tipos e schemas Zod usados pelo front-end
+├── scripts/          # Atalho para o Maven Wrapper da API
 └── package.json      # Scripts do monorepo
 ```

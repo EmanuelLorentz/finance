@@ -25,7 +25,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['apps/api/**/*.ts', 'packages/shared/**/*.ts'],
+    files: ['packages/shared/**/*.ts'],
     languageOptions: {
       globals: globals.node,
     },

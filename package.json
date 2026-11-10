@@ -12,14 +12,16 @@
     "build:web": "npm run build -w @finance/web",
     "lint:web": "npm run lint -w @finance/web",
     "preview:web": "npm run preview -w @finance/web",
-    "dev:api": "npm run dev -w @finance/api",
-    "build:api": "npm run build -w @finance/api",
-    "lint:api": "npm run lint -w @finance/api",
+    "dev:api": "node scripts/api.mjs spring-boot:run",
+    "build:api": "node scripts/api.mjs -B package -DskipTests",
+    "test:api": "node scripts/api.mjs -B test",
+    "start:api": "cd apps/api && java -jar target/finance-api.jar",
     "build:shared": "npm run build -w @finance/shared",
     "lint:shared": "npm run lint -w @finance/shared",
     "build": "npm run build:shared && npm run build:api && npm run build:web",
-    "lint": "npm run lint:shared && npm run lint:api && npm run lint:web",
-    "typecheck": "npm run build"
+    "lint": "npm run lint:shared && npm run lint:web",
+    "test": "npm run test:api",
+    "typecheck": "npm run build:shared && npm run build:web"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

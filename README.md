@@ -10,8 +10,8 @@ O repositório guarda o software. O conteúdo pessoal fica na máquina e fora do
 
 O que o código mostra:
 
-- Monorepo com interface, API e tipos compartilhados, para os dois lados falarem a mesma língua.
-- TypeScript de ponta a ponta, com validação na entrada da API.
+- Monorepo com interface em React e TypeScript e API em Java com Spring Boot.
+- Contrato HTTP estável entre as duas, com validação na entrada da API.
 - Interface desacoplada da persistência: a tela consome a API por serviços e hooks.
 - Execução local, sem banco externo para desenvolver e usar.
 - Dados sensíveis fora do histórico do Git.
